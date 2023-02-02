@@ -13,5 +13,7 @@ UCLASS()
 class TEST_API AMyGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+		AMyGameModeBase();
 	
 };
