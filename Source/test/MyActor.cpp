@@ -12,11 +12,11 @@ AMyActor::AMyActor()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh> SM(TEXT("StaticMesh'/Game/StarterContent/Props/SM_CornerFrame.SM_CornerFrame'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> SM(TEXT("StaticMesh'/Game/StarterContent/Props/SM_Chair.SM_Chair'"));
 
-	if (SM.Succeded)
+	if (SM.Succeeded())
 	{
-
+		Mesh->SetStaticMesh(SM.Object);
 	}
 }
 
