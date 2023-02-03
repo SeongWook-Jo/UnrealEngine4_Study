@@ -2,6 +2,8 @@
 
 
 #include "MyPawn.h"
+#include "GameFramework/FloatingPawnMovement.h"
+
 
 // Sets default values
 AMyPawn::AMyPawn()
@@ -10,7 +12,11 @@ AMyPawn::AMyPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
-	ConstructorHelpers::FObjectFinder<UStaticMesh> SM(TEXT("StaticMesh'/Game/StarterContent/Props/SM_CornerFrame.SM_CornerFrame'"));
+	Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MOVEMENT"));
+
+	RootComponent = Mesh;
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM(TEXT("StaticMesh'/Game/StarterContent/Props/SM_CornerFrame.SM_CornerFrame'"));
 
 	if (SM.Succeeded())
 	{
@@ -24,7 +30,6 @@ AMyPawn::AMyPawn()
 void AMyPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame
@@ -39,5 +44,23 @@ void AMyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AMyPawn::UpDown);
+	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AMyPawn::LeftRight);
+}
+
+void AMyPawn::UpDown(float Value)
+{
+	if (Value == 0.f)
+		return;
+	UE_LOG(LogTemp, Warning, TEXT("UpDown %f"), Value);
+	AddMovementInput(GetActorForwardVector(), Value);
+}
+
+void AMyPawn::LeftRight(float Value)
+{
+	if (Value == 0.f)
+		return;
+	UE_LOG(LogTemp, Error, TEXT("LeftRight %f"), Value);
+	AddMovementInput(GetActorRightVector(), Value);
 }
 
