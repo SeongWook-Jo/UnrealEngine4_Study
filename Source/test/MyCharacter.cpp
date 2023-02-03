@@ -5,11 +5,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "MyAnimInstance.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
@@ -23,7 +24,7 @@ AMyCharacter::AMyCharacter()
 
 	GetMesh()->SetRelativeLocationAndRotation(
 		FVector(0.f, 0.f, -88.f), FRotator(0.f, -90.f, 0.f));
-	
+
 
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SM(TEXT("SkeletalMesh'/Game/ParagonRevenant/Characters/Heroes/Revenant/Meshes/Revenant.Revenant'"));
@@ -38,7 +39,9 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	AnimInstance = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance->OnMontageEnded.AddDynamic(this, &AMyCharacter::OnAttackMontageEnded);
 }
 
 // Called every frame
@@ -53,9 +56,25 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AMyCharacter::Jump);
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AMyCharacter::Attack);
+
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AMyCharacter::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AMyCharacter::LeftRight);
 	PlayerInputComponent->BindAxis(TEXT("Yaw"), this, &AMyCharacter::Yaw);
+
+}
+
+void AMyCharacter::Attack()
+{
+	if (IsAttacking)
+		return;
+	IsAttacking = true;
+
+	AnimInstance->PlayAttackMontage();
+
+	AttackIndex = (AttackIndex + 1) % 3;
+	AnimInstance->JumpToIndex(AttackIndex);
 }
 
 void AMyCharacter::UpDown(float Value)
@@ -77,5 +96,10 @@ void AMyCharacter::LeftRight(float Value)
 void AMyCharacter::Yaw(float Value)
 {
 	AddControllerYawInput(Value);
+}
+
+void AMyCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	IsAttacking = false;
 }
 
