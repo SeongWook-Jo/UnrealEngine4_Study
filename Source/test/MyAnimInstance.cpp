@@ -4,6 +4,7 @@
 #include "MyAnimInstance.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "MyCharacter.h"
 
 UMyAnimInstance::UMyAnimInstance()
 {
@@ -25,10 +26,13 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		Speed = Pawn->GetVelocity().Size();
 
-		auto Character = Cast<ACharacter>(Pawn);
+		auto Character = Cast<AMyCharacter>(Pawn);
 		if (Character)
 		{
 			IsFalling = Character->GetMovementComponent()->IsFalling();
+
+			Horizontal = Character->LeftRightValue;
+			Vertical = Character->UpDownValue;
 		}
 	}
 }
@@ -52,4 +56,5 @@ FName UMyAnimInstance::GetAttackMontageName(int32 SectionIndex)
 void UMyAnimInstance::AnimNotify_AttackHit()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Notify"));
+	OnAttackHit.Broadcast();
 }
