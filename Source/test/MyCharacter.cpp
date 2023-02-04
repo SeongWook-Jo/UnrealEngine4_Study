@@ -34,6 +34,20 @@ AMyCharacter::AMyCharacter()
 	{
 		GetMesh()->SetSkeletalMesh(SM.Object);
 	}
+
+	FName WeaponSocket(TEXT("weapon_r"));
+	if (GetMesh()->DoesSocketExist(WeaponSocket))
+	{
+		Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WEAPON"));
+
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> SW(TEXT("StaticMesh'/Game/MilitaryWeapDark/Weapons/GrenadeLauncherB_Ammo.GrenadeLauncherB_Ammo'"));
+
+		if (SW.Succeeded())
+		{
+			Weapon->SetStaticMesh(SW.Object);
+		}
+		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
+	}
 }
 
 // Called when the game starts or when spawned
