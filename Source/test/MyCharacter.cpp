@@ -8,7 +8,7 @@
 #include "MyAnimInstance.h"
 #include "DrawDebugHelpers.h"
 #include "MyWeapon.h"
-
+#include "MyStatComponent.h"
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
@@ -36,19 +36,8 @@ AMyCharacter::AMyCharacter()
 		GetMesh()->SetSkeletalMesh(SM.Object);
 	}
 
-	//FName WeaponSocket(TEXT("weapon_r"));
-	//if (GetMesh()->DoesSocketExist(WeaponSocket))
-	//{
-	//	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
+	Stat = CreateDefaultSubobject<UMyStatComponent>(TEXT("STAT"));
 
-	//	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SW(TEXT("SkeletalMesh'/Game/MilitaryWeapDark/Weapons/Pistols_B.Pistols_B'"));
-
-	//	if (SW.Succeeded())
-	//	{
-	//		Weapon->SetSkeletalMesh(SW.Object);
-	//	}
-	//	Weapon->SetupAttachment(GetMesh(), WeaponSocket);
-	//}
 }
 
 // Called when the game starts or when spawned
@@ -145,6 +134,9 @@ void AMyCharacter::AttackCheck()
 	if (bResult && HitResult.Actor.IsValid())
 	{
 		UE_LOG(LogTemp, Log, TEXT("Hit Actor : %s"), *HitResult.Actor->GetName());
+
+		FDamageEvent DamageEvent;
+		HitResult.Actor->TakeDamage(Stat->GetAttack(), DamageEvent, GetController(), this);
 	}
 }
 
@@ -170,5 +162,12 @@ void AMyCharacter::Yaw(float Value)
 void AMyCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	IsAttacking = false;
+}
+
+float AMyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Stat->OnAttacked(DamageAmount);
+
+	return DamageAmount;
 }
 
