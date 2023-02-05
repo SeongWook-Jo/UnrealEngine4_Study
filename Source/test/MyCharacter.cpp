@@ -60,12 +60,12 @@ void AMyCharacter::BeginPlay()
 
 	auto CurrentWeapon = GetWorld()->SpawnActor<AMyWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
 
-	if (CurrentWeapon)
+	/*if (CurrentWeapon)
 	{
 		CurrentWeapon->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 			WeaponSocket);
-	}
+	}*/
 }
 
 void AMyCharacter::PostInitializeComponents()
@@ -80,12 +80,12 @@ void AMyCharacter::PostInitializeComponents()
 	}
 }
 
-// Called every frame
-void AMyCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
+//// Called every frame
+//void AMyCharacter::Tick(float DeltaTime)
+//{
+//	Super::Tick(DeltaTime);
+//
+//}
 
 // Called to bind functionality to input
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
